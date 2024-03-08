@@ -1,0 +1,59 @@
+/* styles.css (unchanged) */
+body {
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f5f5f5;
+}
+
+#sudoku-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#sudoku-board {
+  display: grid;
+  grid-template-columns: repeat(9, 40px);
+  gap: 1px;
+  margin-bottom: 20px;
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #333;
+  text-align: center;
+  line-height: 40px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  background-color: #fff;
+}
+
+.cell.solved {
+  background-color: #aaffaa;
+}
+
+#button-container {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#comparison-button {
+  text-decoration: none;
+  color: #333;
+  font-size: 18px;
+  margin-top: 10px;
+}
