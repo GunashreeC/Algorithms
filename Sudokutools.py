@@ -1,54 +1,8 @@
-import tkinter as tk
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from random import randint, shuffle
-from copy import deepcopy
 
-class SudokuSolverGUI:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Sudoku Solver")
-        self.board = generate_board()
-        self.solved_board = deepcopy(self.board)
-        solve(self.solved_board)
-        self.create_widgets()
-
-    def create_widgets(self):
-        self.entries = [
-            [tk.StringVar(value=str(self.board[i][j])) for j in range(9)] for i in range(9)
-        ]
-
-        for i in range(9):
-            for j in range(9):
-                entry = tk.Entry(
-                    self.root, width=2, font=('Arial', 16), textvariable=self.entries[i][j]
-                )
-                entry.grid(row=i, column=j)
-                entry.bind('<FocusIn>', self.clear_entry)
-
-        solve_button = tk.Button(self.root, text="Solve", command=self.solve_puzzle)
-        solve_button.grid(row=9, column=4, pady=10)
-
-    def clear_entry(self, event):
-        event.widget.delete(0, 'end')
-
-    def solve_puzzle(self):
-        for i in range(9):
-            for j in range(9):
-                try:
-                    self.board[i][j] = int(self.entries[i][j].get())
-                except ValueError:
-                    tk.messagebox.showerror("Invalid Input", "Please enter valid numbers.")
-                    return
-
-        if solve(self.board):
-            self.update_entries()
-            tk.messagebox.showinfo("Sudoku Solver", "Puzzle solved successfully!")
-        else:
-            tk.messagebox.showerror("Sudoku Solver", "No solution exists.")
-
-    def update_entries(self):
-        for i in range(9):
-            for j in range(9):
-                self.entries[i][j].set(str(self.board[i][j]))
 
 def print_board(board):
     """
@@ -157,4 +111,60 @@ def generate_board():
         list[list[int]]: A 9x9 sudoku board represented as a list of lists of integers.
     """
 
-    board
+    board = [[0 for i in range(9)] for j in range(9)]
+
+    # Fill the diagonal boxes
+    for i in range(0, 9, 3):
+        nums = list(range(1, 10))
+        shuffle(nums)
+        for row in range(3):
+            for col in range(3):
+                board[i + row][i + col] = nums.pop()
+
+    # Fill the remaining cells with backtracking
+    def fill_cells(board, row, col):
+        """
+        Fills the remaining cells of the sudoku board with backtracking.
+
+        Args:
+            board (list[list[int]]): A 9x9 sudoku board represented as a list of lists of integers.
+            row (int): The current row index to fill.
+            col (int): The current column index to fill.
+
+        Returns:
+            bool: True if the remaining cells are successfully filled, False otherwise.
+        """
+
+        if row == 9:
+            return True
+        if col == 9:
+            return fill_cells(board, row + 1, 0)
+
+        if board[row][col] != 0:
+            return fill_cells(board, row, col + 1)
+
+        for num in range(1, 10):
+            if valid(board, (row, col), num):
+                board[row][col] = num
+
+                if fill_cells(board, row, col + 1):
+                    return True
+
+        board[row][col] = 0
+        return False
+
+    fill_cells(board, 0, 0)
+
+    # Remove a greater number of cells to create a puzzle with fewer initial numbers
+    for _ in range(randint(55, 65)):
+        row, col = randint(0, 8), randint(0, 8)
+        board[row][col] = 0
+
+    return board
+
+
+if __name__ == "__main__":
+    board = generate_board()
+    print_board(board)
+    solve(board)
+    print_board(board)
