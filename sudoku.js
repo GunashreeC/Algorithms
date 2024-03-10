@@ -18,7 +18,7 @@ const initialPuzzle = [
   
 
   function initializeBoard() {
-    puzzle = JSON.parse(JSON.stringify(initialPuzzle)); // Deep copy the initial puzzle
+    puzzle = JSON.parse(JSON.stringify(initialPuzzle)); 
     const board = document.getElementById('sudoku-board');
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
@@ -109,27 +109,118 @@ const initialPuzzle = [
   
     return false; // No solution found
   }
-  
-  async function pencilAndPaperSolve() {
-    let changesMade = true;
-    while (changesMade) {
-      changesMade = false;
-      for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-          if (puzzle[i][j] === null) {
-            const possibilities = getPossibilities(i, j);
-            if (possibilities.length === 1) {
-              puzzle[i][j] = possibilities[0];
-              document.getElementById(`cell-${i}-${j}`).classList.add('solved');
-              changesMade = true;
-              updateBoard();
-              await sleep(50); // Adjusted sleep time for visualization
-            }
+
+async function pencilAndPaperSolve() {
+  let changesMade = true;
+  while (changesMade) {
+    changesMade = false;
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        if (puzzle[i][j] === null) {
+          const possibilities = getPossibilities(i, j);
+
+          // Method 1: Unique missing candidate
+          if (uniqueMissingCandidate(i, j, possibilities)) {
+            changesMade = true;
+          }
+
+          // Method 2: Naked single method
+          if (!changesMade && nakedSingleMethod(i, j, possibilities)) {
+            changesMade = true;
+          }
+
+          if (possibilities.length === 1) {
+            puzzle[i][j] = possibilities[0];
+            document.getElementById(`cell-${i}-${j}`).classList.add('solved');
+            changesMade = true;
+            updateBoard();
+            await sleep(50); // Adjusted sleep time for visualization
           }
         }
       }
     }
   }
+}
+
+// Method 1: Unique missing candidate
+function uniqueMissingCandidate(row, col, possibilities) {
+  for (let num of possibilities) {
+    if (isUniqueMissingCandidate(row, col, num)) {
+      puzzle[row][col] = num;
+      document.getElementById(`cell-${row}-${col}`).classList.add('solved');
+      updateBoard();
+      return true;
+    }
+  }
+  return false;
+}
+
+function isUniqueMissingCandidate(row, col, num) {
+  for (let i = 0; i < 9; i++) {
+    if (puzzle[i][col] === null && i !== row && getPossibilities(i, col).includes(num)) {
+      return false;
+    }
+
+    if (puzzle[row][i] === null && i !== col && getPossibilities(row, i).includes(num)) {
+      return false;
+    }
+  }
+
+  const startRow = Math.floor(row / 3) * 3;
+  const startCol = Math.floor(col / 3) * 3;
+
+  for (let i = startRow; i < startRow + 3; i++) {
+    for (let j = startCol; j < startCol + 3; j++) {
+      if (puzzle[i][j] === null && (i !== row || j !== col) && getPossibilities(i, j).includes(num)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+// Method 2: Naked single method
+function nakedSingleMethod(row, col, possibilities) {
+  if (possibilities.length === 0) {
+    return false;
+  }
+
+  for (let num of possibilities) {
+    let count = 0;
+
+    for (let i = 0; i < 9; i++) {
+      if (puzzle[i][col] === null && i !== row && getPossibilities(i, col).includes(num)) {
+        count++;
+      }
+
+      if (puzzle[row][i] === null && i !== col && getPossibilities(row, i).includes(num)) {
+        count++;
+      }
+    }
+
+    const startRow = Math.floor(row / 3) * 3;
+    const startCol = Math.floor(col / 3) * 3;
+
+    for (let i = startRow; i < startRow + 3; i++) {
+      for (let j = startCol; j < startCol + 3; j++) {
+        if (puzzle[i][j] === null && (i !== row || j !== col) && getPossibilities(i, j).includes(num)) {
+          count++;
+        }
+      }
+    }
+
+    if (count === 0) {
+      puzzle[row][col] = num;
+      document.getElementById(`cell-${row}-${col}`).classList.add('solved');
+      updateBoard();
+      return true;
+    }
+  }
+
+  return false;
+}
+
   
   function getPossibilities(row, col) {
     const possibilities = [];
