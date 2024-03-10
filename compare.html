@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sudoku Comparison</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+</head>
+
+<body>
+  <canvas id="comparisonChart" style="width: 100%; max-width: 700px;"></canvas>
+  <script>
+    const difficultyLevels = ['','Easy', 'Medium', 'Hard', 'Evil'];
+
+    const bruteForceData = [20, 25, 28, 34, 40, 45];
+    const pencilPaperData = [15, 18, 22, 27, 34];
+
+    new Chart("comparisonChart", {
+      type: "line",
+      data: {
+        labels: difficultyLevels,
+        datasets: [
+          {
+            label: "Brute Force",
+            borderColor: "rgba(0, 0, 255, 1.0)",
+            borderWidth: 2,
+            fill: false,
+            data: bruteForceData,
+          },
+          {
+            label: "Pencil and Paper",
+            borderColor: "rgba(255, 0, 0, 1.0)",
+            borderWidth: 2,
+            fill: false,
+            data: pencilPaperData,
+          },
+        ],
+      },
+      options: {
+        title: {
+          display: true,
+          text: 'Sudoku Solver Comparison',
+        },
+        scales: {
+          x: {
+            type: 'category',
+            title: {
+              display: true,
+              text: 'Difficulty Levels',
+            },
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Runtime (ms)',
+            },
+            beginAtZero: true,
+            ticks: {
+              stepSize: 10,
+              min: 0,
+              max: 50,
+            },
+          },
+        },
+      },
+    });
+  </script>
+</body>
+</html>

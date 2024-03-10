@@ -72,7 +72,7 @@ const initialPuzzle = [
       pencilAndPaperSolve();
     }
     updateBoard();
-    alert(`Sudoku solved using ${method} method in ${formatTime(performance.now() - startTime)}!`);
+    alert(`Sudoku solved using ${method} method!`);
   }
   
   function formatTime(milliseconds) {
