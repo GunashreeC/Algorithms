@@ -60,43 +60,55 @@ async function startComparison() {
   const gapElement = createGapElement();
   document.getElementById('comparison-container').appendChild(gapElement);
 
-  // Apply brute force method to the left Sudoku
   const leftBoard = document.getElementById('comparison-board-left');
-  await solveSudoku('brute-force', leftBoard);
+  const leftResults = await solveSudoku('brute-force', unsolvedSudoku, leftBoard);
 
-  // Apply pencil and paper method to the right Sudoku
   const rightBoard = document.getElementById('comparison-board-right');
-  await solveSudoku('pencil-and-paper', rightBoard);
+  const rightResults = await solveSudoku('pencil-and-paper', unsolvedSudoku, rightBoard);
+
+  updateRuntimeComparisonGraph(leftResults.runtime, rightResults.runtime);
 }
+function updateRuntimeComparisonGraph(leftRuntime, rightRuntime) {
+  const ctx = document.getElementById('runtime-chart').getContext('2d');
 
-function createGapElement() {
-  const gapElement = document.createElement('div');
-  gapElement.style.width = '20px'; // Adjust the gap width as needed
-  return gapElement;
-}
-
-async function solveSudoku(method, board) {
-  const startTime = performance.now();
-
-  // Clear the board before solving
-  clearBoard(board);
-
-  if (method === 'brute-force') {
-    await bruteForceSolve(0, 0, board);
-  } else if (method === 'pencil-and-paper') {
-    await pencilAndPaperSolve(board);
-  }
-
-  alert(`Sudoku solved using ${method} method in ${formatTime(performance.now() - startTime)}!`);
-}
-
-function clearBoard(board) {
-  while (board.firstChild) {
-    board.removeChild(board.firstChild);
-  }
-}
-
-function formatTime(milliseconds) {
-  const seconds = (milliseconds / 1000).toFixed(2);
-  return seconds + ' seconds';
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Easy', 'Medium', 'Hard', 'Evil'],
+      datasets: [
+        {
+          label: 'Pencil-and-paper',
+          data: leftRuntime,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 2,
+          fill: false,
+        },
+        {
+          label: 'Brute Force',
+          data: rightRuntime,
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 2,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        x: {
+          type: 'category',
+          labels: ['Easy', 'Medium', 'Hard', 'Evil'],
+          title: {
+            display: true,
+            text: 'Difficulty Levels',
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Runtime (ms)',
+          },
+        },
+      },
+    },
+  });
 }

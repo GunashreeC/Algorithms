@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sudoku Comparison</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- Include Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     #comparison-container {
       display: flex;
@@ -52,16 +54,25 @@
       margin-bottom: 10px;
     }
 
+    #graph-left,
+    #graph-right {
+      width: 300px; /* Adjust the width of the graph as needed */
+      height: 150px; /* Adjust the height of the graph as needed */
+    }
+
     #start-button {
       text-align: center;
     }
   </style>
 </head>
+
 <body>
   <div id="comparison-container">
     <div id="left-section">
       <div id="heading-left">Brute Force Method</div>
       <div id="comparison-board-left" class="board"></div>
+      <canvas id="graph-left"></canvas>
+
     </div>
     <div id="line"></div>
     <div id="start-button">
@@ -71,11 +82,19 @@
     <div id="right-section">
       <div id="heading-right">Pencil and Paper Method</div>
       <div id="comparison-board-right" class="board"></div>
+      <canvas id="graph-right"></canvas>
+
     </div>
+  </div>
+
+  <div id="left-section">
+    <button onclick="generateLineGraphs()">Comparison</button>
+        <div id="comparison-board-left" class="board"></div>
   </div>
 
 
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="sudoku.js"></script>
   <script src="comparison.js"></script>
 </body>
