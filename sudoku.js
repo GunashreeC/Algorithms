@@ -18,19 +18,52 @@ const initialPuzzle = [
   
 
   function initializeBoard() {
-    puzzle = JSON.parse(JSON.stringify(initialPuzzle)); 
+    puzzle = generateRandomBoard(); // Generate a random Sudoku board
     const board = document.getElementById('sudoku-board');
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
         cell.id = `cell-${i}-${j}`;
-        cell.textContent = initialPuzzle[i][j] !== null ? initialPuzzle[i][j] : '';
+        cell.textContent = puzzle[i][j] !== null ? puzzle[i][j] : '';
         cell.addEventListener('click', () => handleClick(i, j));
         board.appendChild(cell);
       }
     }
   }
+  
+  function generateRandomBoard() {
+    const randomBoard = [];
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  
+    // Shuffle the numbers array
+    for (let i = numbers.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+    }
+  
+    // Create a valid Sudoku board based on the shuffled numbers
+    for (let i = 0; i < 9; i++) {
+      const row = [];
+      for (let j = 0; j < 9; j++) {
+        const numIndex = (i * 3 + Math.floor(i / 3) + j) % 9;
+        row.push(numbers[numIndex]);
+      }
+      randomBoard.push(row);
+    }
+  
+    // Add null values for empty cells
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        if (Math.random() < 0.5) {
+          randomBoard[i][j] = null;
+        }
+      }
+    }
+  
+    return randomBoard;
+  }
+  
   
   function handleClick(row, col) {
     const cellValue = prompt('Enter a number (1-9):');
